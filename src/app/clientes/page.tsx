@@ -11,6 +11,7 @@ export default function ClientesPage() {
   const [telefone, setTelefone] = useState("");
   const [placa, setPlaca] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
 
   async function carregar() {
     const { data: clientesData } = await supabase.from("clientes").select("*").order("nome");
@@ -31,8 +32,13 @@ export default function ClientesPage() {
 
   async function adicionarCliente(e: React.FormEvent) {
     e.preventDefault();
+    setErro(null);
     if (!nome.trim()) return;
-    await supabase.from("clientes").insert({ nome, telefone });
+    const { error } = await supabase.from("clientes").insert({ nome, telefone });
+    if (error) {
+      setErro(error.message);
+      return;
+    }
     setNome("");
     setTelefone("");
     carregar();
@@ -40,8 +46,15 @@ export default function ClientesPage() {
 
   async function adicionarVeiculo(e: React.FormEvent) {
     e.preventDefault();
+    setErro(null);
     if (!clienteSelecionado || !placa.trim()) return;
-    await supabase.from("veiculos").insert({ cliente_id: clienteSelecionado, placa: placa.toUpperCase() });
+    const { error } = await supabase
+      .from("veiculos")
+      .insert({ cliente_id: clienteSelecionado, placa: placa.toUpperCase() });
+    if (error) {
+      setErro(error.message);
+      return;
+    }
     setPlaca("");
     carregar();
   }
@@ -66,6 +79,7 @@ export default function ClientesPage() {
         <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
           Adicionar
         </button>
+        {erro && <p className="w-full text-sm text-red-400">{erro}</p>}
       </form>
 
       <div className="space-y-3">
