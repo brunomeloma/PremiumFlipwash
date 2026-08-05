@@ -52,7 +52,7 @@ export default function AgendarPage() {
   }, [data]);
 
   const horariosDisponiveis = useMemo(() => {
-    const opcoes: string[] = [];
+    const opcoes: { horario: string; concorrido: boolean }[] = [];
     const agora = new Date();
     for (let h = HORA_ABERTURA * 60; h < HORA_FECHAMENTO * 60; h += INTERVALO_MIN) {
       const horas = Math.floor(h / 60);
@@ -63,14 +63,12 @@ export default function AgendarPage() {
       if (fim.getHours() > HORA_FECHAMENTO || (fim.getHours() === HORA_FECHAMENTO && fim.getMinutes() > 0)) continue;
       if (inicio < agora) continue;
 
-      const conflita = ocupados.some((o) => {
+      const concorrido = ocupados.some((o) => {
         const oInicio = new Date(o.inicio);
         const oFim = new Date(o.fim);
         return inicio < oFim && fim > oInicio;
       });
-      if (!conflita) {
-        opcoes.push(`${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`);
-      }
+      opcoes.push({ horario: `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`, concorrido });
     }
     return opcoes;
   }, [data, duracao, ocupados]);
@@ -97,11 +95,7 @@ export default function AgendarPage() {
     setEnviando(false);
 
     if (error) {
-      setErro(
-        error.message.includes("exclusion") || error.code === "23P01"
-          ? "Esse horário acabou de ser reservado por outra pessoa. Escolha outro."
-          : error.message
-      );
+      setErro(error.message);
       return;
     }
 
@@ -193,22 +187,33 @@ export default function AgendarPage() {
             {carregandoHorarios ? (
               <p className="text-sm text-slate-500">Carregando horários...</p>
             ) : horariosDisponiveis.length === 0 ? (
-              <p className="text-sm text-slate-500">Sem horários livres nesse dia.</p>
+              <p className="text-sm text-slate-500">Sem horários dentro do funcionamento nesse dia.</p>
             ) : (
-              <div className="grid grid-cols-4 gap-2">
-                {horariosDisponiveis.map((h) => (
-                  <button
-                    type="button"
-                    key={h}
-                    onClick={() => setHorario(h)}
-                    className={`rounded-lg py-2 text-sm ${
-                      horario === h ? "bg-[#029cd9] text-white font-medium" : "bg-slate-800 text-slate-300"
-                    }`}
-                  >
-                    {h}
-                  </button>
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-4 gap-2">
+                  {horariosDisponiveis.map(({ horario: h, concorrido }) => (
+                    <button
+                      type="button"
+                      key={h}
+                      onClick={() => setHorario(h)}
+                      className={`relative rounded-lg py-2 text-sm ${
+                        horario === h
+                          ? "bg-[#029cd9] text-white font-medium"
+                          : concorrido
+                          ? "bg-amber-500/10 text-amber-300"
+                          : "bg-slate-800 text-slate-300"
+                      }`}
+                    >
+                      {h}
+                      {concorrido && horario !== h && <span className="ml-1 text-[10px]">●</span>}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  <span className="text-amber-400">●</span> já tem gente marcada nesse horário — pode escolher
+                  mesmo assim, se estiver cheio a gente confirma com você por mensagem.
+                </p>
+              </>
             )}
           </div>
 

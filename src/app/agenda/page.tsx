@@ -102,11 +102,7 @@ export default function AgendaPage() {
     setSalvando(false);
 
     if (error) {
-      setErro(
-        error.code === "23P01"
-          ? "Já existe um agendamento nesse horário."
-          : error.message
-      );
+      setErro(error.message);
       return;
     }
 
@@ -142,7 +138,7 @@ export default function AgendaPage() {
       .update({ inicio: novoInicioDate.toISOString(), fim: novoFimDate.toISOString() })
       .eq("id", remarcandoId);
     if (error) {
-      setErro(error.code === "23P01" ? "Já existe um agendamento nesse horário." : error.message);
+      setErro(error.message);
       return;
     }
     setRemarcandoId(null);
