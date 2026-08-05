@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: "/clientes", label: "Clientes" },
   { href: "/planos", label: "Planos" },
   { href: "/financeiro", label: "Financeiro", adminOnly: true },
+  { href: "/instalar", label: "Instalar" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
