@@ -63,7 +63,7 @@ export default function ClientesPage() {
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
         />
-        <button className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950">
+        <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
           Adicionar
         </button>
       </form>
@@ -78,7 +78,7 @@ export default function ClientesPage() {
               </div>
               <button
                 onClick={() => setClienteSelecionado(clienteSelecionado === c.id ? null : c.id)}
-                className="text-sm text-white"
+                className="text-sm text-[#029cd9]"
               >
                 + Veículo
               </button>
@@ -100,7 +100,7 @@ export default function ClientesPage() {
                   value={placa}
                   onChange={(e) => setPlaca(e.target.value)}
                 />
-                <button className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-950">
+                <button className="rounded-lg bg-[#029cd9] px-3 py-2 text-sm font-medium text-white">
                   Salvar
                 </button>
               </form>

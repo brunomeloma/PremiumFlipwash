@@ -69,7 +69,7 @@ export default function LoginPage() {
 
         {mode === "signup" && (
           <input
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400 focus:border-white/30"
+            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400 focus:border-[#029cd9]/60"
             placeholder="Seu nome"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
@@ -77,7 +77,7 @@ export default function LoginPage() {
           />
         )}
         <input
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400 focus:border-white/30"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400 focus:border-[#029cd9]/60"
           type="email"
           placeholder="E-mail"
           value={email}
@@ -85,7 +85,7 @@ export default function LoginPage() {
           required
         />
         <input
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400 focus:border-white/30"
+          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400 focus:border-[#029cd9]/60"
           type="password"
           placeholder="Senha"
           value={senha}
@@ -99,7 +99,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-white py-2 font-medium text-slate-950 transition hover:bg-slate-200 disabled:opacity-50"
+          className="w-full rounded-lg bg-[#029cd9] py-2 font-medium text-white transition hover:bg-[#0489bd] disabled:opacity-50"
         >
           {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
         </button>

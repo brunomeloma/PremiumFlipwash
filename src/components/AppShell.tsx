@@ -56,7 +56,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-        <span className="font-semibold text-white">Flip Wash</span>
+        <span className="font-semibold text-[#029cd9]">Flip Wash</span>
         <button onClick={handleSignOut} className="text-sm text-slate-400 hover:text-slate-100">
           Sair
         </button>
@@ -68,7 +68,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             href={item.href}
             className={`whitespace-nowrap rounded-full px-3 py-1.5 text-sm ${
               pathname === item.href
-                ? "bg-white text-slate-950 font-medium"
+                ? "bg-[#029cd9] text-white font-medium"
                 : "bg-slate-900 text-slate-300"
             }`}
           >
