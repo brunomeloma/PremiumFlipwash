@@ -14,26 +14,29 @@ export default function PainelPage() {
       const inicioDoDia = new Date();
       inicioDoDia.setHours(0, 0, 0, 0);
 
-      const [vendasRes, assinaturasRes, agendamentosRes] = await Promise.all([
-        supabase
-          .from("vendas")
-          .select("valor")
-          .gte("created_at", inicioDoDia.toISOString()),
-        supabase
-          .from("assinaturas")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "ativo"),
-        supabase
-          .from("agendamentos")
-          .select("id", { count: "exact", head: true })
-          .gte("inicio", inicioDoDia.toISOString()),
-      ]);
+      try {
+        const [vendasRes, assinaturasRes, agendamentosRes] = await Promise.all([
+          supabase
+            .from("vendas")
+            .select("valor")
+            .gte("created_at", inicioDoDia.toISOString()),
+          supabase
+            .from("assinaturas")
+            .select("id", { count: "exact", head: true })
+            .eq("status", "ativo"),
+          supabase
+            .from("agendamentos")
+            .select("id", { count: "exact", head: true })
+            .gte("inicio", inicioDoDia.toISOString()),
+        ]);
 
-      const total = (vendasRes.data ?? []).reduce((sum, v) => sum + Number(v.valor), 0);
-      setFaturamentoHoje(total);
-      setPlanosAtivos(assinaturasRes.count ?? 0);
-      setAtendimentosHoje(agendamentosRes.count ?? 0);
-      setLoading(false);
+        const total = (vendasRes.data ?? []).reduce((sum, v) => sum + Number(v.valor), 0);
+        setFaturamentoHoje(total);
+        setPlanosAtivos(assinaturasRes.count ?? 0);
+        setAtendimentosHoje(agendamentosRes.count ?? 0);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
