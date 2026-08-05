@@ -104,7 +104,10 @@ export default function FinanceiroPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-lg font-semibold">Financeiro</h1>
+      <div>
+        <h1 className="text-lg font-semibold">Financeiro</h1>
+        <p className="text-sm text-slate-400">Visão só do dono: assinaturas, vendas avulsas e recusas</p>
+      </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
@@ -160,54 +163,73 @@ export default function FinanceiroPage() {
         ))}
       </div>
 
-      <form onSubmit={registrarVenda} className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <select
-          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-          value={clienteId}
-          onChange={(e) => setClienteId(e.target.value)}
-        >
-          <option value="">Cliente</option>
-          {clientes.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nome}
-            </option>
-          ))}
-        </select>
-        <input
-          className="w-28 rounded-lg bg-slate-800 px-3 py-2"
-          type="number"
-          min={0}
-          step="0.01"
-          placeholder="Valor R$"
-          value={valor}
-          onChange={(e) => setValor(Number(e.target.value))}
-        />
-        <select
-          className="rounded-lg bg-slate-800 px-3 py-2"
-          value={formaPagamento}
-          onChange={(e) => setFormaPagamento(e.target.value as (typeof FORMAS)[number])}
-        >
-          {FORMAS.map((f) => (
-            <option key={f} value={f}>
-              {f}
-            </option>
-          ))}
-        </select>
-        <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
-          Registrar venda avulsa
-        </button>
+      <form
+        onSubmit={registrarVenda}
+        className="grid grid-cols-1 gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:grid-cols-3 lg:grid-cols-4"
+      >
+        <div className="lg:col-span-2">
+          <label className="mb-1 block text-xs text-slate-400">Cliente</label>
+          <select
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            value={clienteId}
+            onChange={(e) => setClienteId(e.target.value)}
+          >
+            <option value="">Selecione</option>
+            {clientes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">Valor (R$)</label>
+          <input
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            type="number"
+            min={0}
+            step="0.01"
+            value={valor}
+            onChange={(e) => setValor(Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">Forma de pagamento</label>
+          <select
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            value={formaPagamento}
+            onChange={(e) => setFormaPagamento(e.target.value as (typeof FORMAS)[number])}
+          >
+            {FORMAS.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-end lg:col-span-4">
+          <button className="w-full rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white sm:w-auto">
+            Registrar venda avulsa
+          </button>
+        </div>
       </form>
 
       <div className="space-y-2">
         <h2 className="text-sm font-medium text-slate-400">Vendas avulsas (pagas na maquininha)</h2>
-        {vendas.map((v) => (
-          <div key={v.id} className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
-            <span>{nomeCliente(v.cliente_id)}</span>
-            <span className="text-slate-400">
-              R$ {Number(v.valor).toFixed(2)} · {v.forma_pagamento}
-            </span>
-          </div>
-        ))}
+        {vendas.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-800 p-6 text-center text-sm text-slate-500">
+            Nenhuma venda avulsa registrada ainda.
+          </p>
+        ) : (
+          vendas.map((v) => (
+            <div key={v.id} className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
+              <span>{nomeCliente(v.cliente_id)}</span>
+              <span className="text-slate-400">
+                R$ {Number(v.valor).toFixed(2)} · {v.forma_pagamento}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

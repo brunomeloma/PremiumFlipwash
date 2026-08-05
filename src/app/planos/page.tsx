@@ -106,83 +106,118 @@ export default function PlanosPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-lg font-semibold">Planos e Combos Mensais</h1>
+      <div>
+        <h1 className="text-lg font-semibold">Planos e Combos Mensais</h1>
+        <p className="text-sm text-slate-400">Pacotes de lavagem recorrente e assinaturas de clientes</p>
+      </div>
 
       {role === "admin" && (
-        <form onSubmit={criarPlano} className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-          <input
-            className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-            placeholder="Nome do combo (ex: 4 lavagens/mês)"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
-          <input
-            className="w-28 rounded-lg bg-slate-800 px-3 py-2"
-            type="number"
-            min={1}
-            placeholder="Lavagens/mês"
-            value={lavagens}
-            onChange={(e) => setLavagens(Number(e.target.value))}
-          />
-          <input
-            className="w-28 rounded-lg bg-slate-800 px-3 py-2"
-            type="number"
-            min={0}
-            step="0.01"
-            placeholder="Preço R$"
-            value={preco}
-            onChange={(e) => setPreco(Number(e.target.value))}
-          />
-          <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
-            Criar combo
-          </button>
-          {erroPlano && <p className="w-full text-sm text-red-400">{erroPlano}</p>}
+        <form
+          onSubmit={criarPlano}
+          className="grid grid-cols-1 gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <div className="lg:col-span-2">
+            <label className="mb-1 block text-xs text-slate-400">Nome do combo</label>
+            <input
+              className="w-full rounded-lg bg-slate-800 px-3 py-2"
+              placeholder="Ex: Completa 4x/mês"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-400">Lavagens/mês</label>
+            <input
+              className="w-full rounded-lg bg-slate-800 px-3 py-2"
+              type="number"
+              min={1}
+              value={lavagens}
+              onChange={(e) => setLavagens(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-400">Preço mensal (R$)</label>
+            <input
+              className="w-full rounded-lg bg-slate-800 px-3 py-2"
+              type="number"
+              min={0}
+              step="0.01"
+              value={preco}
+              onChange={(e) => setPreco(Number(e.target.value))}
+            />
+          </div>
+          <div className="flex items-end lg:col-span-4">
+            <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
+              Criar combo
+            </button>
+          </div>
+          {erroPlano && <p className="text-sm text-red-400 lg:col-span-4">{erroPlano}</p>}
         </form>
       )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {planos.map((p) => (
-          <div key={p.id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-            <p className="font-medium">{p.nome}</p>
-            <p className="text-sm text-slate-400">
-              {p.lavagens_por_mes}x/mês · R$ {Number(p.preco_mensal).toFixed(2)} · R${" "}
-              {(Number(p.preco_mensal) / p.lavagens_por_mes).toFixed(2)}/lavagem
-            </p>
-          </div>
-        ))}
+        {planos.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-800 p-6 text-center text-sm text-slate-500 sm:col-span-2">
+            Nenhum combo cadastrado ainda.
+          </p>
+        ) : (
+          planos.map((p) => (
+            <div key={p.id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+              <p className="font-medium">{p.nome}</p>
+              <p className="text-sm text-slate-400">
+                {p.lavagens_por_mes}x/mês · R$ {Number(p.preco_mensal).toFixed(2)} · R${" "}
+                {(Number(p.preco_mensal) / p.lavagens_por_mes).toFixed(2)}/lavagem
+              </p>
+            </div>
+          ))
+        )}
       </div>
 
-      <form onSubmit={assinarPlano} className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <select
-          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-          value={clienteId}
-          onChange={(e) => setClienteId(e.target.value)}
-        >
-          <option value="">Selecione o cliente</option>
-          {clientes.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nome}
-            </option>
-          ))}
-        </select>
-        <select
-          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-          value={planoId}
-          onChange={(e) => setPlanoId(e.target.value)}
-        >
-          <option value="">Selecione o combo</option>
-          {planos.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
-        <button disabled={criandoCobranca} className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white disabled:opacity-50">
-          {criandoCobranca ? "Gerando cobrança..." : "Assinar plano"}
-        </button>
-        {erroAssinatura && <p className="w-full text-sm text-red-400">{erroAssinatura}</p>}
+      <form
+        onSubmit={assinarPlano}
+        className="grid grid-cols-1 gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:grid-cols-3"
+      >
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">Cliente</label>
+          <select
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            value={clienteId}
+            onChange={(e) => setClienteId(e.target.value)}
+          >
+            <option value="">Selecione o cliente</option>
+            {clientes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">Combo</label>
+          <select
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            value={planoId}
+            onChange={(e) => setPlanoId(e.target.value)}
+          >
+            <option value="">Selecione o combo</option>
+            {planos.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-end">
+          <button
+            disabled={criandoCobranca}
+            className="w-full rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white disabled:opacity-50"
+          >
+            {criandoCobranca ? "Gerando cobrança..." : "Assinar plano"}
+          </button>
+        </div>
+        {erroAssinatura && <p className="text-sm text-red-400 sm:col-span-3">{erroAssinatura}</p>}
         {linkPagamento && (
-          <p className="w-full text-sm text-emerald-400">
+          <p className="text-sm text-emerald-400 sm:col-span-3">
             Assinatura criada! Envie o link de pagamento pro cliente:{" "}
             <a href={linkPagamento} target="_blank" rel="noopener noreferrer" className="underline">
               {linkPagamento}
@@ -193,16 +228,22 @@ export default function PlanosPage() {
 
       <div className="space-y-2">
         <h2 className="text-sm font-medium text-slate-400">Assinaturas ativas</h2>
-        {assinaturas.map((a) => {
-          const plano = planoDoAssinante(a.plano_id);
-          return (
-            <div key={a.id} className="rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
-              <span className="font-medium">{nomeCliente(a.cliente_id)}</span> — {plano?.nome} ·{" "}
-              {a.lavagens_usadas}/{plano?.lavagens_por_mes} usadas · renova em{" "}
-              {new Date(a.data_renovacao).toLocaleDateString("pt-BR")}
-            </div>
-          );
-        })}
+        {assinaturas.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-800 p-6 text-center text-sm text-slate-500">
+            Nenhuma assinatura ativa ainda.
+          </p>
+        ) : (
+          assinaturas.map((a) => {
+            const plano = planoDoAssinante(a.plano_id);
+            return (
+              <div key={a.id} className="rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
+                <span className="font-medium">{nomeCliente(a.cliente_id)}</span> — {plano?.nome} ·{" "}
+                {a.lavagens_usadas}/{plano?.lavagens_por_mes} usadas · renova em{" "}
+                {new Date(a.data_renovacao).toLocaleDateString("pt-BR")}
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

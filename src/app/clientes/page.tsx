@@ -65,72 +65,97 @@ export default function ClientesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-lg font-semibold">Clientes</h1>
+      <div>
+        <h1 className="text-lg font-semibold">Clientes</h1>
+        <p className="text-sm text-slate-400">Cadastro de clientes e veículos</p>
+      </div>
 
-      <form onSubmit={adicionarCliente} className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <input
-          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-          placeholder="Nome do cliente"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <input
-          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-          placeholder="Telefone"
-          value={telefone}
-          onChange={(e) => setTelefone(e.target.value)}
-        />
-        <input
-          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
-          placeholder="CPF/CNPJ (p/ assinatura recorrente)"
-          value={cpfCnpj}
-          onChange={(e) => setCpfCnpj(e.target.value)}
-        />
-        <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
-          Adicionar
-        </button>
-        {erro && <p className="w-full text-sm text-red-400">{erro}</p>}
+      <form
+        onSubmit={adicionarCliente}
+        className="grid grid-cols-1 gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">Nome</label>
+          <input
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            placeholder="Nome do cliente"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">Telefone</label>
+          <input
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            placeholder="(xx) xxxxx-xxxx"
+            value={telefone}
+            onChange={(e) => setTelefone(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs text-slate-400">CPF/CNPJ</label>
+          <input
+            className="w-full rounded-lg bg-slate-800 px-3 py-2"
+            placeholder="Para assinatura recorrente"
+            value={cpfCnpj}
+            onChange={(e) => setCpfCnpj(e.target.value)}
+          />
+        </div>
+        <div className="flex items-end">
+          <button className="w-full rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
+            Adicionar
+          </button>
+        </div>
+        {erro && <p className="text-sm text-red-400 sm:col-span-2 lg:col-span-4">{erro}</p>}
       </form>
 
       <div className="space-y-3">
-        {clientes.map((c) => (
-          <div key={c.id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">{c.nome}</p>
-                <p className="text-sm text-slate-400">{c.telefone}</p>
-              </div>
-              <button
-                onClick={() => setClienteSelecionado(clienteSelecionado === c.id ? null : c.id)}
-                className="text-sm text-[#029cd9]"
-              >
-                + Veículo
-              </button>
-            </div>
-
-            <ul className="mt-2 flex flex-wrap gap-2">
-              {(veiculosPorCliente[c.id] ?? []).map((v) => (
-                <li key={v.id} className="rounded-full bg-slate-800 px-3 py-1 text-xs">
-                  {v.placa}
-                </li>
-              ))}
-            </ul>
-
-            {clienteSelecionado === c.id && (
-              <form onSubmit={adicionarVeiculo} className="mt-3 flex gap-2">
-                <input
-                  className="flex-1 rounded-lg bg-slate-800 px-3 py-2 text-sm"
-                  placeholder="Placa"
-                  value={placa}
-                  onChange={(e) => setPlaca(e.target.value)}
-                />
-                <button className="rounded-lg bg-[#029cd9] px-3 py-2 text-sm font-medium text-white">
-                  Salvar
+        {clientes.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-800 p-6 text-center text-sm text-slate-500">
+            Nenhum cliente cadastrado ainda.
+          </p>
+        ) : (
+          clientes.map((c) => (
+            <div key={c.id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">{c.nome}</p>
+                  <p className="text-sm text-slate-400">{c.telefone}</p>
+                </div>
+                <button
+                  onClick={() => setClienteSelecionado(clienteSelecionado === c.id ? null : c.id)}
+                  className="text-sm text-[#029cd9]"
+                >
+                  + Veículo
                 </button>
-              </form>
-            )}
-          </div>
-        ))}
+              </div>
+
+              {(veiculosPorCliente[c.id] ?? []).length > 0 && (
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {(veiculosPorCliente[c.id] ?? []).map((v) => (
+                    <li key={v.id} className="rounded-full bg-slate-800 px-3 py-1 text-xs">
+                      {v.placa}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {clienteSelecionado === c.id && (
+                <form onSubmit={adicionarVeiculo} className="mt-3 flex gap-2">
+                  <input
+                    className="flex-1 rounded-lg bg-slate-800 px-3 py-2 text-sm"
+                    placeholder="Placa"
+                    value={placa}
+                    onChange={(e) => setPlaca(e.target.value)}
+                  />
+                  <button className="rounded-lg bg-[#029cd9] px-3 py-2 text-sm font-medium text-white">
+                    Salvar
+                  </button>
+                </form>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
