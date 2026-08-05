@@ -14,9 +14,9 @@ const INTERVALO_MIN = 30;
 const DURACAO_PADRAO = 60;
 
 const TIPOS_VEICULO = [
-  { value: "hatch", label: "Hatch", duracaoSugerida: 45 },
-  { value: "sedan", label: "Sedã", duracaoSugerida: 60 },
-  { value: "suv_picape", label: "SUV / Picape", duracaoSugerida: 90 },
+  { value: "hatch", label: "Hatch" },
+  { value: "sedan", label: "Sedã" },
+  { value: "suv_picape", label: "SUV / Picape" },
 ] as const;
 
 function hojeISO() {
@@ -29,7 +29,7 @@ type Ocupado = { inicio: string; fim: string };
 
 export default function AgendarPage() {
   const [data, setData] = useState(hojeISO());
-  const [duracao, setDuracao] = useState(DURACAO_PADRAO);
+  const duracao = DURACAO_PADRAO;
   const [tipoVeiculo, setTipoVeiculo] = useState<"" | (typeof TIPOS_VEICULO)[number]["value"]>("");
   const [horario, setHorario] = useState("");
   const [nome, setNome] = useState("");
@@ -173,12 +173,7 @@ export default function AgendarPage() {
             <select
               className="w-full rounded-lg bg-slate-800 px-3 py-2"
               value={tipoVeiculo}
-              onChange={(e) => {
-                const valor = e.target.value as typeof tipoVeiculo;
-                setTipoVeiculo(valor);
-                const tipo = TIPOS_VEICULO.find((t) => t.value === valor);
-                setDuracao(tipo ? tipo.duracaoSugerida : DURACAO_PADRAO);
-              }}
+              onChange={(e) => setTipoVeiculo(e.target.value as typeof tipoVeiculo)}
             >
               <option value="">Não sei / prefiro não informar</option>
               {TIPOS_VEICULO.map((t) => (
