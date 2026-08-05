@@ -41,15 +41,11 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-950 text-slate-100 lg:grid lg:grid-cols-2">
       <CarWashHero />
 
-      <div className="flex min-h-screen items-center justify-center p-4 lg:min-h-0">
+      <div className="flex items-center justify-center p-4 py-8 lg:min-h-screen">
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-sm space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6"
         >
-          <div className="lg:hidden">
-            <MiniCarBadge />
-          </div>
-
           <div>
             <h1 className="text-xl font-semibold text-white">Flip Wash</h1>
             <p className="text-sm text-slate-400">
@@ -109,7 +105,7 @@ export default function LoginPage() {
 
 function CarWashHero() {
   return (
-    <div className="relative hidden overflow-hidden border-r border-slate-800 bg-gradient-to-b from-slate-900 via-slate-950 to-black lg:flex lg:flex-col lg:justify-between lg:p-10">
+    <div className="relative flex flex-col justify-between overflow-hidden border-b border-slate-800 bg-gradient-to-b from-slate-900 via-slate-950 to-black px-6 pb-6 pt-8 lg:min-h-screen lg:justify-center lg:gap-10 lg:border-b-0 lg:border-r lg:px-10 lg:py-10">
       {/* Bolhas de sabão flutuando */}
       <div className="pointer-events-none absolute inset-0">
         {SUDS.map((s, i) => (
@@ -127,19 +123,19 @@ function CarWashHero() {
         ))}
       </div>
 
-      <div className="relative z-10">
-        <span className="text-lg font-semibold tracking-wide text-white">FLIP WASH</span>
+      <div className="relative z-10 text-center lg:text-left">
+        <span className="text-lg font-semibold tracking-widest text-white">FLIP WASH</span>
         <p className="mt-1 text-sm text-slate-400">Premium Barbearia · Lava-Jato</p>
       </div>
 
-      <div className="relative z-10 -mb-4">
-        <p className="mb-6 max-w-xs text-2xl font-semibold leading-snug text-white">
+      <div className="relative z-10">
+        <p className="mb-5 text-center text-lg font-semibold leading-snug text-white lg:mb-6 lg:max-w-xs lg:text-left lg:text-2xl">
           Gestão completa do seu lava-jato, do agendamento ao caixa.
         </p>
         <CarIllustration />
         {/* Linha da água / piso molhado */}
-        <div className="mt-2 h-2 w-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent blur-[2px]" />
-        <div className="mt-1 flex justify-center gap-1.5">
+        <div className="mt-2 h-2 w-full rounded-full bg-gradient-to-r from-transparent via-white/25 to-transparent blur-[2px]" />
+        <div className="mt-1 flex justify-center gap-1.5 lg:justify-start">
           {[0, 1, 2, 3, 4].map((i) => (
             <span
               key={i}
@@ -166,66 +162,55 @@ function CarWashHero() {
 
 function CarIllustration() {
   return (
-    <svg viewBox="0 0 400 160" className="w-full drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
-      {/* respingos de água atrás do carro */}
-      <g stroke="white" strokeOpacity="0.25" strokeWidth="3" strokeLinecap="round">
-        <line x1="30" y1="60" x2="10" y2="50" />
-        <line x1="30" y1="80" x2="6" y2="80" />
-        <line x1="34" y1="100" x2="12" y2="112" />
-        <line x1="370" y1="55" x2="392" y2="44" />
-        <line x1="372" y1="80" x2="396" y2="80" />
-        <line x1="368" y1="102" x2="388" y2="114" />
+    <svg viewBox="0 0 400 170" className="w-full max-w-sm mx-auto drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)] lg:max-w-none lg:mx-0">
+      {/* jato de água lavando o carro */}
+      <g stroke="white" strokeOpacity="0.35" strokeWidth="3" strokeLinecap="round">
+        <path d="M20 20 L70 70" strokeDasharray="6 6" />
+        <path d="M15 45 L65 85" strokeDasharray="6 6" />
+      </g>
+      {/* bico da mangueira */}
+      <circle cx="14" cy="14" r="6" fill="white" fillOpacity="0.9" />
+
+      {/* respingos de água ao redor do carro */}
+      <g stroke="white" strokeOpacity="0.3" strokeWidth="3" strokeLinecap="round">
+        <line x1="34" y1="70" x2="12" y2="60" />
+        <line x1="34" y1="92" x2="8" y2="92" />
+        <line x1="38" y1="112" x2="16" y2="124" />
+        <line x1="366" y1="65" x2="390" y2="54" />
+        <line x1="368" y1="92" x2="394" y2="92" />
+        <line x1="364" y1="114" x2="386" y2="126" />
       </g>
 
       {/* corpo do carro */}
       <path
-        d="M40 118 C40 100 55 96 75 92 L110 68 C120 60 135 55 150 55 L250 55 C265 55 280 60 290 68 L322 92 C342 96 358 102 360 118 L360 128 C360 133 356 136 351 136 L49 136 C44 136 40 133 40 128 Z"
+        d="M40 128 C40 110 55 106 75 102 L110 78 C120 70 135 65 150 65 L250 65 C265 65 280 70 290 78 L322 102 C342 106 358 112 360 128 L360 138 C360 143 356 146 351 146 L49 146 C44 146 40 143 40 138 Z"
         fill="white"
       />
       <path
-        d="M118 68 L145 58 C150 56 156 55 162 55 L238 55 C246 55 253 57 259 61 L286 78 Z"
+        d="M118 78 L145 68 C150 66 156 65 162 65 L238 65 C246 65 253 67 259 71 L286 88 Z"
         fill="#0f172a"
         opacity="0.85"
       />
       {/* faixa preta lateral */}
-      <path d="M40 116 L360 116 L360 122 L40 122 Z" fill="#0f172a" opacity="0.9" />
+      <path d="M40 126 L360 126 L360 132 L40 132 Z" fill="#0f172a" opacity="0.9" />
 
       {/* rodas */}
-      <circle cx="112" cy="132" r="18" fill="#0f172a" />
-      <circle cx="112" cy="132" r="8" fill="white" />
-      <circle cx="288" cy="132" r="18" fill="#0f172a" />
-      <circle cx="288" cy="132" r="8" fill="white" />
+      <circle cx="112" cy="142" r="18" fill="#0f172a" />
+      <circle cx="112" cy="142" r="8" fill="white" />
+      <circle cx="288" cy="142" r="18" fill="#0f172a" />
+      <circle cx="288" cy="142" r="8" fill="white" />
 
       {/* bolhas de espuma sobre o carro */}
-      <g fill="white" fillOpacity="0.85">
-        <circle cx="150" cy="48" r="5" />
-        <circle cx="165" cy="40" r="7" />
-        <circle cx="182" cy="46" r="4" />
-        <circle cx="205" cy="38" r="6" />
-        <circle cx="225" cy="46" r="4" />
-        <circle cx="245" cy="40" r="5" />
+      <g fill="white" fillOpacity="0.9">
+        <circle cx="150" cy="58" r="5" />
+        <circle cx="165" cy="50" r="7" />
+        <circle cx="182" cy="56" r="4" />
+        <circle cx="205" cy="48" r="6" />
+        <circle cx="225" cy="56" r="4" />
+        <circle cx="245" cy="50" r="5" />
+        <circle cx="130" cy="52" r="4" />
       </g>
     </svg>
-  );
-}
-
-function MiniCarBadge() {
-  return (
-    <div className="mb-2 flex items-center gap-2 text-slate-400">
-      <svg viewBox="0 0 48 24" className="h-6 w-12">
-        <path
-          d="M4 18 C4 14 8 13 12 12 L18 7 C20 5 24 4 27 4 L36 4 C39 4 42 5 44 7 L47 12 C50 13 53 15 53 18"
-          fill="none"
-        />
-        <path
-          d="M4 18 C4 14 8 13 12 12 L18 7 C20 5 24 4 27 4 L34 4 C37 4 40 5 42 7 L47 12 C50 13 53 15 53 18 L53 20 C53 21 52 22 51 22 L6 22 C5 22 4 21 4 20 Z"
-          fill="currentColor"
-        />
-        <circle cx="14" cy="21" r="2.4" fill="#0f172a" />
-        <circle cx="40" cy="21" r="2.4" fill="#0f172a" />
-      </svg>
-      <span className="text-xs uppercase tracking-widest">Flip Wash</span>
-    </div>
   );
 }
 
