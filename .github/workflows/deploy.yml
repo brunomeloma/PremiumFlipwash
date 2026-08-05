@@ -22,7 +22,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: NEXT_PUBLIC_BASE_PATH="/premiumflipwash" npm run build
+      - run: NEXT_PUBLIC_BASE_PATH="/PremiumFlipwash" npm run build
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
