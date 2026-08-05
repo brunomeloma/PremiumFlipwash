@@ -2,31 +2,55 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Cliente, Venda } from "@/lib/types";
+import { useRole } from "@/lib/useRole";
+import type { Assinatura, Cliente, Cobranca, Venda } from "@/lib/types";
 
 const FORMAS = ["dinheiro", "pix", "debito", "credito"] as const;
 
+const STATUS_COBRANCA_LABEL: Record<Cobranca["status"], string> = {
+  pendente: "Pendente",
+  pago: "Pago",
+  recusado: "Cartão recusado",
+  cancelado: "Cancelado",
+};
+
+const STATUS_COBRANCA_COR: Record<Cobranca["status"], string> = {
+  pendente: "text-slate-400",
+  pago: "text-emerald-400",
+  recusado: "text-red-400",
+  cancelado: "text-slate-500",
+};
+
 export default function FinanceiroPage() {
+  const role = useRole();
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [assinaturas, setAssinaturas] = useState<Assinatura[]>([]);
+  const [cobrancas, setCobrancas] = useState<Cobranca[]>([]);
 
   const [clienteId, setClienteId] = useState("");
   const [valor, setValor] = useState(0);
   const [formaPagamento, setFormaPagamento] = useState<(typeof FORMAS)[number]>("pix");
 
   async function carregar() {
-    const [{ data: vendasData }, { data: clientesData }] = await Promise.all([
-      supabase.from("vendas").select("*").order("created_at", { ascending: false }),
-      supabase.from("clientes").select("*").order("nome"),
-    ]);
+    const [{ data: vendasData }, { data: clientesData }, { data: assinaturasData }, { data: cobrancasData }] =
+      await Promise.all([
+        supabase.from("vendas").select("*").order("created_at", { ascending: false }),
+        supabase.from("clientes").select("*").order("nome"),
+        supabase.from("assinaturas").select("*"),
+        supabase.from("cobrancas").select("*").order("vencimento", { ascending: false }),
+      ]);
     setVendas(vendasData ?? []);
     setClientes(clientesData ?? []);
+    setAssinaturas(assinaturasData ?? []);
+    setCobrancas(cobrancasData ?? []);
   }
 
   useEffect(() => {
+    if (role !== "admin") return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sincroniza com o Supabase ao montar
     carregar();
-  }, []);
+  }, [role]);
 
   async function registrarVenda(e: React.FormEvent) {
     e.preventDefault();
@@ -41,6 +65,19 @@ export default function FinanceiroPage() {
     return clientes.find((c) => c.id === id)?.nome ?? "—";
   }
 
+  function nomeClienteDaCobranca(cobranca: Cobranca) {
+    const assinatura = assinaturas.find((a) => a.id === cobranca.assinatura_id);
+    return assinatura ? nomeCliente(assinatura.cliente_id) : "—";
+  }
+
+  if (role === undefined) {
+    return <p className="text-slate-400">Carregando...</p>;
+  }
+
+  if (role !== "admin") {
+    return <p className="text-slate-400">Você não tem acesso a essa página.</p>;
+  }
+
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
   const totalHoje = vendas
@@ -51,6 +88,12 @@ export default function FinanceiroPage() {
   const totalMes = vendas
     .filter((v) => new Date(v.created_at) >= inicioMes)
     .reduce((sum, v) => sum + Number(v.valor), 0);
+
+  const assinaturasRecebidasMes = cobrancas
+    .filter((c) => c.status === "pago" && c.pago_em && new Date(c.pago_em) >= inicioMes)
+    .reduce((sum, c) => sum + Number(c.valor), 0);
+
+  const cobrancasRecusadas = cobrancas.filter((c) => c.status === "recusado");
 
   const porForma = FORMAS.map((forma) => ({
     forma,
@@ -63,15 +106,50 @@ export default function FinanceiroPage() {
     <div className="space-y-6">
       <h1 className="text-lg font-semibold">Financeiro</h1>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-          <p className="text-sm text-slate-400">Faturamento hoje</p>
+          <p className="text-sm text-slate-400">Avulso hoje</p>
           <p className="mt-1 text-2xl font-semibold text-[#029cd9]">R$ {totalHoje.toFixed(2)}</p>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-          <p className="text-sm text-slate-400">Faturamento do mês</p>
+          <p className="text-sm text-slate-400">Avulso do mês</p>
           <p className="mt-1 text-2xl font-semibold text-[#029cd9]">R$ {totalMes.toFixed(2)}</p>
         </div>
+        <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <p className="text-sm text-slate-400">Assinaturas recebidas no mês</p>
+          <p className="mt-1 text-2xl font-semibold text-[#029cd9]">R$ {assinaturasRecebidasMes.toFixed(2)}</p>
+        </div>
+      </div>
+
+      {cobrancasRecusadas.length > 0 && (
+        <div className="rounded-xl border border-red-900 bg-red-950/40 p-4">
+          <p className="text-sm font-medium text-red-300">
+            {cobrancasRecusadas.length} cartão(ões) recusado(s) — assinatura cancelada automaticamente
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <h2 className="text-sm font-medium text-slate-400">Cobranças de assinatura (recorrente)</h2>
+        {cobrancas.length === 0 && (
+          <p className="text-sm text-slate-500">
+            Nenhuma cobrança ainda. Assim que a integração com o gateway de pagamento estiver ativa, as cobranças
+            mensais das assinaturas aparecem aqui automaticamente.
+          </p>
+        )}
+        {cobrancas.map((c) => (
+          <div key={c.id} className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
+            <span>{nomeClienteDaCobranca(c)}</span>
+            <span className="flex items-center gap-2">
+              <span className="text-slate-400">
+                R$ {Number(c.valor).toFixed(2)} · vence {new Date(c.vencimento).toLocaleDateString("pt-BR")}
+              </span>
+              <span className={`font-medium ${STATUS_COBRANCA_COR[c.status]}`}>
+                {STATUS_COBRANCA_LABEL[c.status]}
+              </span>
+            </span>
+          </div>
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -116,11 +194,12 @@ export default function FinanceiroPage() {
           ))}
         </select>
         <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
-          Registrar venda
+          Registrar venda avulsa
         </button>
       </form>
 
       <div className="space-y-2">
+        <h2 className="text-sm font-medium text-slate-400">Vendas avulsas (pagas na maquininha)</h2>
         {vendas.map((v) => (
           <div key={v.id} className="flex justify-between rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
             <span>{nomeCliente(v.cliente_id)}</span>

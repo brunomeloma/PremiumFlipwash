@@ -41,6 +41,18 @@ export type Agendamento = {
   status: "agendado" | "em_andamento" | "concluido" | "cancelado";
 };
 
+export type Cobranca = {
+  id: string;
+  assinatura_id: string;
+  gateway: string;
+  gateway_cobranca_id: string | null;
+  valor: number;
+  status: "pendente" | "pago" | "recusado" | "cancelado";
+  vencimento: string;
+  pago_em: string | null;
+  created_at: string;
+};
+
 export type Venda = {
   id: string;
   cliente_id: string;

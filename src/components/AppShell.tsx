@@ -4,17 +4,21 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { useRole } from "@/lib/useRole";
+
+const PUBLIC_ROUTES = ["/login", "/agendar"];
 
 const NAV_ITEMS = [
   { href: "/", label: "Painel" },
   { href: "/agenda", label: "Agenda" },
   { href: "/clientes", label: "Clientes" },
   { href: "/planos", label: "Planos" },
-  { href: "/financeiro", label: "Financeiro" },
+  { href: "/financeiro", label: "Financeiro", adminOnly: true },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const role = useRole();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -26,13 +30,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+
   useEffect(() => {
-    if (session === null && pathname !== "/login") {
+    if (session === null && !isPublicRoute) {
       router.replace("/login");
     }
-  }, [session, pathname, router]);
+  }, [session, isPublicRoute, router]);
 
-  if (pathname === "/login") {
+  useEffect(() => {
+    if (pathname === "/financeiro" && role === "funcionario") {
+      router.replace("/");
+    }
+  }, [pathname, role, router]);
+
+  if (isPublicRoute) {
     return <>{children}</>;
   }
 
@@ -53,6 +65,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     router.replace("/login");
   }
 
+  const navItems = NAV_ITEMS.filter((item) => !item.adminOnly || role === "admin");
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800 px-4 py-3 flex items-center justify-between">
@@ -62,7 +76,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </button>
       </header>
       <nav className="flex gap-2 overflow-x-auto px-4 py-2 border-b border-slate-800">
-        {NAV_ITEMS.map((item) => (
+        {navItems.map((item) => (
           <a
             key={item.href}
             href={item.href}
