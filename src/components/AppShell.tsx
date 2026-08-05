@@ -7,7 +7,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { useRole } from "@/lib/useRole";
 
-const PUBLIC_ROUTES = ["/login", "/agendar"];
+const PUBLIC_ROUTES = ["/login", "/agendar", "/confirmar"];
 
 const NAV_ITEMS = [
   { href: "/", label: "Painel" },

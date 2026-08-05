@@ -11,6 +11,12 @@ const HORA_FECHAMENTO = 18;
 const INTERVALO_MIN = 30;
 const DURACOES = [30, 45, 60, 90, 120];
 
+const TIPOS_VEICULO = [
+  { value: "hatch", label: "Hatch", duracaoSugerida: 45 },
+  { value: "sedan", label: "Sedã", duracaoSugerida: 60 },
+  { value: "suv_picape", label: "SUV / Picape", duracaoSugerida: 90 },
+] as const;
+
 function hojeISO() {
   const d = new Date();
   d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -22,6 +28,7 @@ type Ocupado = { inicio: string; fim: string };
 export default function AgendarPage() {
   const [data, setData] = useState(hojeISO());
   const [duracao, setDuracao] = useState(60);
+  const [tipoVeiculo, setTipoVeiculo] = useState<"" | (typeof TIPOS_VEICULO)[number]["value"]>("");
   const [horario, setHorario] = useState("");
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -84,6 +91,7 @@ export default function AgendarPage() {
       p_placa: placa || null,
       p_inicio: inicio.toISOString(),
       p_duracao_min: duracao,
+      p_tipo_veiculo: tipoVeiculo || null,
     });
 
     setEnviando(false);
@@ -142,6 +150,27 @@ export default function AgendarPage() {
               min={hojeISO()}
               onChange={(e) => setData(e.target.value)}
             />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs text-slate-400">Tipo do veículo</label>
+            <select
+              className="w-full rounded-lg bg-slate-800 px-3 py-2"
+              value={tipoVeiculo}
+              onChange={(e) => {
+                const valor = e.target.value as typeof tipoVeiculo;
+                setTipoVeiculo(valor);
+                const tipo = TIPOS_VEICULO.find((t) => t.value === valor);
+                if (tipo) setDuracao(tipo.duracaoSugerida);
+              }}
+            >
+              <option value="">Não sei / prefiro não informar</option>
+              {TIPOS_VEICULO.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

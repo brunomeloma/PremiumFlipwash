@@ -13,6 +13,7 @@ export type Veiculo = {
   placa: string;
   modelo: string | null;
   cor: string | null;
+  tipo: "hatch" | "sedan" | "suv_picape" | null;
 };
 
 export type Plano = {
@@ -41,6 +42,9 @@ export type Agendamento = {
   inicio: string;
   fim: string;
   status: "agendado" | "em_andamento" | "concluido" | "cancelado";
+  confirmacao_token: string;
+  confirmado: "pendente" | "confirmado" | "recusado";
+  compareceu: boolean | null;
 };
 
 export type Cobranca = {

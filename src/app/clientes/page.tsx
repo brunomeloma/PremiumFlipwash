@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Cliente, Veiculo } from "@/lib/types";
 
+const TIPOS_VEICULO: { value: NonNullable<Veiculo["tipo"]>; label: string }[] = [
+  { value: "hatch", label: "Hatch" },
+  { value: "sedan", label: "Sedã" },
+  { value: "suv_picape", label: "SUV / Picape" },
+];
+
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [veiculosPorCliente, setVeiculosPorCliente] = useState<Record<string, Veiculo[]>>({});
@@ -11,6 +17,7 @@ export default function ClientesPage() {
   const [telefone, setTelefone] = useState("");
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [placa, setPlaca] = useState("");
+  const [tipoVeiculo, setTipoVeiculo] = useState<Veiculo["tipo"]>(null);
   const [clienteSelecionado, setClienteSelecionado] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -54,12 +61,13 @@ export default function ClientesPage() {
     if (!clienteSelecionado || !placa.trim()) return;
     const { error } = await supabase
       .from("veiculos")
-      .insert({ cliente_id: clienteSelecionado, placa: placa.toUpperCase() });
+      .insert({ cliente_id: clienteSelecionado, placa: placa.toUpperCase(), tipo: tipoVeiculo });
     if (error) {
       setErro(error.message);
       return;
     }
     setPlaca("");
+    setTipoVeiculo(null);
     carregar();
   }
 
@@ -135,19 +143,36 @@ export default function ClientesPage() {
                   {(veiculosPorCliente[c.id] ?? []).map((v) => (
                     <li key={v.id} className="rounded-full bg-slate-800 px-3 py-1 text-xs">
                       {v.placa}
+                      {v.tipo && (
+                        <span className="ml-1 text-slate-400">
+                          · {TIPOS_VEICULO.find((t) => t.value === v.tipo)?.label ?? v.tipo}
+                        </span>
+                      )}
                     </li>
                   ))}
                 </ul>
               )}
 
               {clienteSelecionado === c.id && (
-                <form onSubmit={adicionarVeiculo} className="mt-3 flex gap-2">
+                <form onSubmit={adicionarVeiculo} className="mt-3 flex flex-wrap gap-2">
                   <input
                     className="flex-1 rounded-lg bg-slate-800 px-3 py-2 text-sm"
                     placeholder="Placa"
                     value={placa}
                     onChange={(e) => setPlaca(e.target.value)}
                   />
+                  <select
+                    className="rounded-lg bg-slate-800 px-3 py-2 text-sm"
+                    value={tipoVeiculo ?? ""}
+                    onChange={(e) => setTipoVeiculo((e.target.value || null) as Veiculo["tipo"])}
+                  >
+                    <option value="">Tipo (opcional)</option>
+                    {TIPOS_VEICULO.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
                   <button className="rounded-lg bg-[#029cd9] px-3 py-2 text-sm font-medium text-white">
                     Salvar
                   </button>
