@@ -66,11 +66,11 @@ export default function FinanceiroPage() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
           <p className="text-sm text-slate-400">Faturamento hoje</p>
-          <p className="mt-1 text-2xl font-semibold text-cyan-400">R$ {totalHoje.toFixed(2)}</p>
+          <p className="mt-1 text-2xl font-semibold text-white">R$ {totalHoje.toFixed(2)}</p>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
           <p className="text-sm text-slate-400">Faturamento do mês</p>
-          <p className="mt-1 text-2xl font-semibold text-cyan-400">R$ {totalMes.toFixed(2)}</p>
+          <p className="mt-1 text-2xl font-semibold text-white">R$ {totalMes.toFixed(2)}</p>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export default function FinanceiroPage() {
             </option>
           ))}
         </select>
-        <button className="rounded-lg bg-cyan-500 px-4 py-2 font-medium text-slate-950">
+        <button className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950">
           Registrar venda
         </button>
       </form>

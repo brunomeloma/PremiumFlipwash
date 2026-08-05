@@ -54,7 +54,7 @@ export default function PainelPage() {
           {cards.map((c) => (
             <div key={c.label} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
               <p className="text-sm text-slate-400">{c.label}</p>
-              <p className="mt-1 text-2xl font-semibold text-cyan-400">{c.value}</p>
+              <p className="mt-1 text-2xl font-semibold text-white">{c.value}</p>
             </div>
           ))}
         </div>

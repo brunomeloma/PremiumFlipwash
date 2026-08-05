@@ -93,7 +93,7 @@ export default function PlanosPage() {
           value={preco}
           onChange={(e) => setPreco(Number(e.target.value))}
         />
-        <button className="rounded-lg bg-cyan-500 px-4 py-2 font-medium text-slate-950">
+        <button className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950">
           Criar combo
         </button>
       </form>
@@ -135,7 +135,7 @@ export default function PlanosPage() {
             </option>
           ))}
         </select>
-        <button className="rounded-lg bg-cyan-500 px-4 py-2 font-medium text-slate-950">
+        <button className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950">
           Assinar plano
         </button>
       </form>

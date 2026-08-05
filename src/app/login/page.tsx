@@ -40,7 +40,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 text-slate-100">
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <h1 className="text-xl font-semibold text-cyan-400">Flip Wash</h1>
+        <h1 className="text-xl font-semibold text-white">Flip Wash</h1>
         <p className="text-sm text-slate-400">
           {mode === "login" ? "Entrar no sistema" : "Criar conta"}
         </p>
@@ -77,7 +77,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-cyan-500 py-2 font-medium text-slate-950 disabled:opacity-50"
+          className="w-full rounded-lg bg-white py-2 font-medium text-slate-950 disabled:opacity-50"
         >
           {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
         </button>
