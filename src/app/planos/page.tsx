@@ -5,6 +5,20 @@ import { supabase } from "@/lib/supabase";
 import { useRole } from "@/lib/useRole";
 import type { Assinatura, Cliente, Plano } from "@/lib/types";
 
+const STATUS_ASSINATURA_LABEL: Record<Assinatura["status"], string> = {
+  pendente: "Aguardando 1º pagamento",
+  ativo: "Ativa",
+  vencido: "Cartão recusado",
+  cancelado: "Cancelada",
+};
+
+const STATUS_ASSINATURA_COR: Record<Assinatura["status"], string> = {
+  pendente: "bg-amber-500/20 text-amber-300",
+  ativo: "bg-emerald-500/20 text-emerald-300",
+  vencido: "bg-red-500/20 text-red-300",
+  cancelado: "bg-slate-500/20 text-slate-400",
+};
+
 export default function PlanosPage() {
   const role = useRole();
   const [planos, setPlanos] = useState<Plano[]>([]);
@@ -27,7 +41,7 @@ export default function PlanosPage() {
       await Promise.all([
         supabase.from("planos").select("*").eq("ativo", true).order("preco_mensal"),
         supabase.from("clientes").select("*").order("nome"),
-        supabase.from("assinaturas").select("*").eq("status", "ativo"),
+        supabase.from("assinaturas").select("*").neq("status", "cancelado"),
       ]);
     setPlanos(planosData ?? []);
     setClientes(clientesData ?? []);
@@ -227,19 +241,31 @@ export default function PlanosPage() {
       </form>
 
       <div className="space-y-2">
-        <h2 className="text-sm font-medium text-slate-400">Assinaturas ativas</h2>
+        <h2 className="text-sm font-medium text-slate-400">Assinaturas</h2>
+        <p className="text-xs text-slate-500">
+          Uma assinatura só fica &quot;Ativa&quot; depois que a Asaas confirma o primeiro pagamento. Enquanto isso,
+          não libere as lavagens do combo.
+        </p>
         {assinaturas.length === 0 ? (
           <p className="rounded-xl border border-dashed border-slate-800 p-6 text-center text-sm text-slate-500">
-            Nenhuma assinatura ativa ainda.
+            Nenhuma assinatura ainda.
           </p>
         ) : (
           assinaturas.map((a) => {
             const plano = planoDoAssinante(a.plano_id);
             return (
-              <div key={a.id} className="rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm">
-                <span className="font-medium">{nomeCliente(a.cliente_id)}</span> — {plano?.nome} ·{" "}
-                {a.lavagens_usadas}/{plano?.lavagens_por_mes} usadas · renova em{" "}
-                {new Date(a.data_renovacao).toLocaleDateString("pt-BR")}
+              <div
+                key={a.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm"
+              >
+                <span>
+                  <span className="font-medium">{nomeCliente(a.cliente_id)}</span> — {plano?.nome} ·{" "}
+                  {a.lavagens_usadas}/{plano?.lavagens_por_mes} usadas · renova em{" "}
+                  {new Date(a.data_renovacao).toLocaleDateString("pt-BR")}
+                </span>
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_ASSINATURA_COR[a.status]}`}>
+                  {STATUS_ASSINATURA_LABEL[a.status]}
+                </span>
               </div>
             );
           })

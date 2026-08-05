@@ -30,7 +30,7 @@ export type Assinatura = {
   lavagens_usadas: number;
   data_inicio: string;
   data_renovacao: string;
-  status: "ativo" | "cancelado" | "vencido";
+  status: "pendente" | "ativo" | "cancelado" | "vencido";
   asaas_subscription_id: string | null;
 };
 
