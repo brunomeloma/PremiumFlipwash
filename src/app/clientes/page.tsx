@@ -9,6 +9,7 @@ export default function ClientesPage() {
   const [veiculosPorCliente, setVeiculosPorCliente] = useState<Record<string, Veiculo[]>>({});
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [cpfCnpj, setCpfCnpj] = useState("");
   const [placa, setPlaca] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -34,13 +35,16 @@ export default function ClientesPage() {
     e.preventDefault();
     setErro(null);
     if (!nome.trim()) return;
-    const { error } = await supabase.from("clientes").insert({ nome, telefone });
+    const { error } = await supabase
+      .from("clientes")
+      .insert({ nome, telefone, cpf_cnpj: cpfCnpj || null });
     if (error) {
       setErro(error.message);
       return;
     }
     setNome("");
     setTelefone("");
+    setCpfCnpj("");
     carregar();
   }
 
@@ -75,6 +79,12 @@ export default function ClientesPage() {
           placeholder="Telefone"
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
+        />
+        <input
+          className="flex-1 min-w-[150px] rounded-lg bg-slate-800 px-3 py-2"
+          placeholder="CPF/CNPJ (p/ assinatura recorrente)"
+          value={cpfCnpj}
+          onChange={(e) => setCpfCnpj(e.target.value)}
         />
         <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
           Adicionar

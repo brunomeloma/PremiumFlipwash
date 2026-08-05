@@ -3,6 +3,7 @@ export type Cliente = {
   nome: string;
   telefone: string | null;
   email: string | null;
+  cpf_cnpj: string | null;
   created_at: string;
 };
 
@@ -30,6 +31,7 @@ export type Assinatura = {
   data_inicio: string;
   data_renovacao: string;
   status: "ativo" | "cancelado" | "vencido";
+  asaas_subscription_id: string | null;
 };
 
 export type Agendamento = {
@@ -50,6 +52,7 @@ export type Cobranca = {
   status: "pendente" | "pago" | "recusado" | "cancelado";
   vencimento: string;
   pago_em: string | null;
+  invoice_url: string | null;
   created_at: string;
 };
 

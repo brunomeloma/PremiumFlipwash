@@ -19,6 +19,8 @@ export default function PlanosPage() {
   const [clienteId, setClienteId] = useState("");
   const [planoId, setPlanoId] = useState("");
   const [erroAssinatura, setErroAssinatura] = useState<string | null>(null);
+  const [criandoCobranca, setCriandoCobranca] = useState(false);
+  const [linkPagamento, setLinkPagamento] = useState<string | null>(null);
 
   async function carregar() {
     const [{ data: planosData }, { data: clientesData }, { data: assinaturasData }] =
@@ -57,18 +59,39 @@ export default function PlanosPage() {
   async function assinarPlano(e: React.FormEvent) {
     e.preventDefault();
     setErroAssinatura(null);
+    setLinkPagamento(null);
     if (!clienteId || !planoId) return;
     const dataRenovacao = new Date();
     dataRenovacao.setMonth(dataRenovacao.getMonth() + 1);
-    const { error } = await supabase.from("assinaturas").insert({
-      cliente_id: clienteId,
-      plano_id: planoId,
-      data_renovacao: dataRenovacao.toISOString().slice(0, 10),
-    });
+    const { data: novaAssinatura, error } = await supabase
+      .from("assinaturas")
+      .insert({
+        cliente_id: clienteId,
+        plano_id: planoId,
+        data_renovacao: dataRenovacao.toISOString().slice(0, 10),
+      })
+      .select()
+      .single();
     if (error) {
       setErroAssinatura(error.message);
       return;
     }
+
+    setCriandoCobranca(true);
+    const { data: cobranca, error: cobrancaErro } = await supabase.functions.invoke(
+      "asaas-subscription",
+      { body: { assinaturaId: novaAssinatura.id } }
+    );
+    setCriandoCobranca(false);
+
+    if (cobrancaErro || cobranca?.error) {
+      setErroAssinatura(
+        `Assinatura criada, mas a cobrança recorrente falhou: ${cobranca?.error ?? cobrancaErro?.message}`
+      );
+    } else if (cobranca?.linkPagamento) {
+      setLinkPagamento(cobranca.linkPagamento);
+    }
+
     setClienteId("");
     setPlanoId("");
     carregar();
@@ -154,10 +177,18 @@ export default function PlanosPage() {
             </option>
           ))}
         </select>
-        <button className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white">
-          Assinar plano
+        <button disabled={criandoCobranca} className="rounded-lg bg-[#029cd9] px-4 py-2 font-medium text-white disabled:opacity-50">
+          {criandoCobranca ? "Gerando cobrança..." : "Assinar plano"}
         </button>
         {erroAssinatura && <p className="w-full text-sm text-red-400">{erroAssinatura}</p>}
+        {linkPagamento && (
+          <p className="w-full text-sm text-emerald-400">
+            Assinatura criada! Envie o link de pagamento pro cliente:{" "}
+            <a href={linkPagamento} target="_blank" rel="noopener noreferrer" className="underline">
+              {linkPagamento}
+            </a>
+          </p>
+        )}
       </form>
 
       <div className="space-y-2">
