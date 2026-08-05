@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRole } from "@/lib/useRole";
 import type { Assinatura, Cliente, Plano } from "@/lib/types";
+import { liquidoCartaoAVista, liquidoPix } from "@/lib/taxasAsaas";
 
 const STATUS_ASSINATURA_LABEL: Record<Assinatura["status"], string> = {
   pendente: "Aguardando 1º pagamento",
@@ -175,15 +176,25 @@ export default function PlanosPage() {
             Nenhum combo cadastrado ainda.
           </p>
         ) : (
-          planos.map((p) => (
-            <div key={p.id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-              <p className="font-medium">{p.nome}</p>
-              <p className="text-sm text-slate-400">
-                {p.lavagens_por_mes}x/mês · R$ {Number(p.preco_mensal).toFixed(2)} · R${" "}
-                {(Number(p.preco_mensal) / p.lavagens_por_mes).toFixed(2)}/lavagem
-              </p>
-            </div>
-          ))
+          planos.map((p) => {
+            const preco = Number(p.preco_mensal);
+            return (
+              <div key={p.id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+                <p className="font-medium">{p.nome}</p>
+                <p className="text-sm text-slate-400">
+                  {p.lavagens_por_mes}x/mês · R$ {preco.toFixed(2)} · R${" "}
+                  {(preco / p.lavagens_por_mes).toFixed(2)}/lavagem
+                </p>
+                {role === "admin" && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Você recebe: <span className="text-emerald-400">Pix R$ {liquidoPix(preco).toFixed(2)}</span> (na
+                    hora) · <span className="text-amber-400">Cartão R$ {liquidoCartaoAVista(preco).toFixed(2)}</span>{" "}
+                    (em 32 dias)
+                  </p>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
 
