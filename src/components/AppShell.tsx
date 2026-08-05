@@ -71,9 +71,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <span className="font-semibold text-[#029cd9]">Flip Wash</span>
-        <button onClick={handleSignOut} className="text-sm text-slate-400 hover:text-slate-100">
-          Sair
-        </button>
+        <div className="flex items-center gap-4">
+          <a href="/perfil" className="text-sm text-slate-400 hover:text-slate-100">
+            Meu perfil
+          </a>
+          <button onClick={handleSignOut} className="text-sm text-slate-400 hover:text-slate-100">
+            Sair
+          </button>
+        </div>
       </header>
       <nav className="flex gap-2 overflow-x-auto px-4 py-2 border-b border-slate-800">
         {navItems.map((item) => (
