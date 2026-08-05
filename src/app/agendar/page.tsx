@@ -11,7 +11,7 @@ const WHATSAPP_LAVA_JATO = "5599991883093";
 const HORA_ABERTURA = 8;
 const HORA_FECHAMENTO = 18;
 const INTERVALO_MIN = 30;
-const DURACOES = [30, 45, 60, 90, 120];
+const DURACAO_PADRAO = 60;
 
 const TIPOS_VEICULO = [
   { value: "hatch", label: "Hatch", duracaoSugerida: 45 },
@@ -29,7 +29,7 @@ type Ocupado = { inicio: string; fim: string };
 
 export default function AgendarPage() {
   const [data, setData] = useState(hojeISO());
-  const [duracao, setDuracao] = useState(60);
+  const [duracao, setDuracao] = useState(DURACAO_PADRAO);
   const [tipoVeiculo, setTipoVeiculo] = useState<"" | (typeof TIPOS_VEICULO)[number]["value"]>("");
   const [horario, setHorario] = useState("");
   const [nome, setNome] = useState("");
@@ -177,28 +177,13 @@ export default function AgendarPage() {
                 const valor = e.target.value as typeof tipoVeiculo;
                 setTipoVeiculo(valor);
                 const tipo = TIPOS_VEICULO.find((t) => t.value === valor);
-                if (tipo) setDuracao(tipo.duracaoSugerida);
+                setDuracao(tipo ? tipo.duracaoSugerida : DURACAO_PADRAO);
               }}
             >
               <option value="">Não sei / prefiro não informar</option>
               {TIPOS_VEICULO.map((t) => (
                 <option key={t.value} value={t.value}>
                   {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs text-slate-400">Duração do serviço</label>
-            <select
-              className="w-full rounded-lg bg-slate-800 px-3 py-2"
-              value={duracao}
-              onChange={(e) => setDuracao(Number(e.target.value))}
-            >
-              {DURACOES.map((d) => (
-                <option key={d} value={d}>
-                  {d} minutos
                 </option>
               ))}
             </select>
