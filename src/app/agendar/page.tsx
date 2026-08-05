@@ -6,6 +6,8 @@ import { supabase } from "@/lib/supabase";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+const WHATSAPP_LAVA_JATO = "5599991883093";
+
 const HORA_ABERTURA = 8;
 const HORA_FECHAMENTO = 18;
 const INTERVALO_MIN = 30;
@@ -118,6 +120,18 @@ export default function AgendarPage() {
             })}{" "}
             às {horario}. Te esperamos na Flip Wash!
           </p>
+          <a
+            href={`https://wa.me/${WHATSAPP_LAVA_JATO}?text=${encodeURIComponent(
+              `Oi! Acabei de agendar uma lavagem para ${new Date(`${data}T${horario}:00`).toLocaleDateString(
+                "pt-BR"
+              )} às ${horario}.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block w-full rounded-lg bg-emerald-500 py-2 font-medium text-white"
+          >
+            Falar no WhatsApp
+          </a>
         </div>
       </div>
     );
@@ -132,6 +146,14 @@ export default function AgendarPage() {
           </div>
           <h1 className="mt-3 text-xl font-semibold text-white">Agende sua lavagem</h1>
           <p className="text-sm text-slate-400">Escolha o melhor dia e horário</p>
+          <a
+            href={`https://wa.me/${WHATSAPP_LAVA_JATO}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 text-sm text-emerald-400 underline"
+          >
+            Dúvidas? Fale no WhatsApp
+          </a>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-6">
