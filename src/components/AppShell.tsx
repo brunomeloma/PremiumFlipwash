@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -72,9 +73,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <header className="border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <span className="font-semibold text-[#029cd9]">Flip Wash</span>
         <div className="flex items-center gap-4">
-          <a href="/perfil" className="text-sm text-slate-400 hover:text-slate-100">
+          <Link href="/perfil" className="text-sm text-slate-400 hover:text-slate-100">
             Meu perfil
-          </a>
+          </Link>
           <button onClick={handleSignOut} className="text-sm text-slate-400 hover:text-slate-100">
             Sair
           </button>
@@ -82,7 +83,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <nav className="flex gap-2 overflow-x-auto px-4 py-2 border-b border-slate-800">
         {navItems.map((item) => (
-          <a
+          <Link
             key={item.href}
             href={item.href}
             className={`whitespace-nowrap rounded-full px-3 py-1.5 text-sm ${
@@ -92,7 +93,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             }`}
           >
             {item.label}
-          </a>
+          </Link>
         ))}
       </nav>
       <main className="p-4">{children}</main>
