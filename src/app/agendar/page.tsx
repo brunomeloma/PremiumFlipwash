@@ -19,10 +19,10 @@ const TIPOS_VEICULO = [
   { value: "suv_picape", label: "SUV / Picape" },
 ] as const;
 
+const FUSO_LOJA = "America/Sao_Paulo";
+
 function hojeISO() {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: FUSO_LOJA }).format(new Date());
 }
 
 type Ocupado = { inicio: string; fim: string };
@@ -59,10 +59,12 @@ export default function AgendarPage() {
     for (let h = HORA_ABERTURA * 60; h < HORA_FECHAMENTO * 60; h += INTERVALO_MIN) {
       const horas = Math.floor(h / 60);
       const minutos = h % 60;
-      const inicio = new Date(`${data}T${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:00`);
+      const inicio = new Date(
+        `${data}T${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:00-03:00`
+      );
       const fim = new Date(inicio.getTime() + duracao * 60_000);
 
-      if (fim.getHours() > HORA_FECHAMENTO || (fim.getHours() === HORA_FECHAMENTO && fim.getMinutes() > 0)) continue;
+      if (h + duracao > HORA_FECHAMENTO * 60) continue;
       if (inicio < agora) continue;
 
       const concorrido = ocupados.some((o) => {
@@ -84,7 +86,7 @@ export default function AgendarPage() {
     }
     setEnviando(true);
 
-    const inicio = new Date(`${data}T${horario}:00`);
+    const inicio = new Date(`${data}T${horario}:00-03:00`);
     const { error } = await supabase.rpc("criar_agendamento_publico", {
       p_nome: nome,
       p_telefone: telefone,
@@ -113,7 +115,7 @@ export default function AgendarPage() {
           </div>
           <h1 className="mt-4 text-lg font-semibold text-[#029cd9]">Agendamento confirmado!</h1>
           <p className="mt-2 text-sm text-slate-400">
-            {new Date(`${data}T${horario}:00`).toLocaleDateString("pt-BR", {
+            {new Date(`${data}T${horario}:00-03:00`).toLocaleDateString("pt-BR", {
               weekday: "long",
               day: "2-digit",
               month: "long",
@@ -122,7 +124,7 @@ export default function AgendarPage() {
           </p>
           <a
             href={`https://wa.me/${WHATSAPP_LAVA_JATO}?text=${encodeURIComponent(
-              `Oi! Acabei de agendar uma lavagem para ${new Date(`${data}T${horario}:00`).toLocaleDateString(
+              `Oi! Acabei de agendar uma lavagem para ${new Date(`${data}T${horario}:00-03:00`).toLocaleDateString(
                 "pt-BR"
               )} às ${horario}.`
             )}`}
