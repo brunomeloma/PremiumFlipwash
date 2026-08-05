@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export type Role = "admin" | "funcionario" | null;
+export type Role = "admin" | "funcionario" | "pendente" | null;
 
 export function useRole() {
   const [role, setRole] = useState<Role | undefined>(undefined);
@@ -19,7 +19,11 @@ export function useRole() {
         .from("user_roles")
         .select("role")
         .eq("user_id", userId);
-      const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+      if (!roles || roles.length === 0) {
+        setRole("pendente");
+        return;
+      }
+      const isAdmin = roles.some((r) => r.role === "admin");
       setRole(isAdmin ? "admin" : "funcionario");
     });
   }, []);

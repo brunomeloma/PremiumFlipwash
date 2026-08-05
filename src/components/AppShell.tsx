@@ -67,6 +67,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     router.replace("/login");
   }
 
+  if (role === "pendente") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 p-4 text-center text-slate-100">
+        <p className="text-lg font-semibold text-[#029cd9]">Conta criada!</p>
+        <p className="max-w-sm text-sm text-slate-400">
+          Seu acesso ainda precisa ser liberado pelo dono da Flip Wash. Avise ele que você já criou a conta —
+          assim que liberar, essa mensagem some sozinha.
+        </p>
+        <button onClick={handleSignOut} className="text-sm text-slate-400 underline hover:text-slate-100">
+          Sair
+        </button>
+      </div>
+    );
+  }
+
   const navItems = NAV_ITEMS.filter((item) => !item.adminOnly || role === "admin");
 
   return (
